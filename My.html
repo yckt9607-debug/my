@@ -1,0 +1,976 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>My — 나만의 정보 저장소</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<style>
+  :root{
+    --bg: #fbfbfd;
+    --bg-elev: #ffffff;
+    --bg-soft: #f5f5f7;
+    --text: #1d1d1f;
+    --text-soft: #6e6e73;
+    --text-mute: #86868b;
+    --line: rgba(0,0,0,0.08);
+    --line-soft: rgba(0,0,0,0.05);
+    --accent: #0071e3;
+    --accent-hover: #0077ed;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.04), 0 1px 1px rgba(0,0,0,.03);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+    --shadow-lg: 0 24px 60px rgba(0,0,0,.08), 0 8px 20px rgba(0,0,0,.04);
+    --radius-sm: 10px;
+    --radius-md: 14px;
+    --radius-lg: 22px;
+    --radius-xl: 28px;
+  }
+
+  [data-theme="dark"]{
+    --bg: #000000;
+    --bg-elev: #1c1c1e;
+    --bg-soft: #161617;
+    --text: #f5f5f7;
+    --text-soft: #a1a1a6;
+    --text-mute: #6e6e73;
+    --line: rgba(255,255,255,0.10);
+    --line-soft: rgba(255,255,255,0.06);
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+    --shadow-md: 0 4px 16px rgba(0,0,0,.4);
+    --shadow-lg: 0 24px 60px rgba(0,0,0,.5);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, "Apple SD Gothic Neo", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.01em;
+    transition: background-color .3s ease, color .3s ease;
+  }
+
+  /* ============ NAV ============ */
+  .nav{
+    position: sticky; top:0; z-index: 100;
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .nav-inner{
+    max-width: 1180px; margin: 0 auto;
+    height: 52px;
+    display: flex; align-items:center; justify-content: space-between;
+    padding: 0 22px;
+  }
+  .nav-logo{
+    font-size: 21px; font-weight: 600; letter-spacing: -0.03em;
+    color: var(--text);
+  }
+  .nav-links{ display:flex; gap: 28px; }
+  .nav-links a{
+    font-size: 12.5px; color: var(--text);
+    text-decoration: none; opacity: .85;
+    font-weight: 400;
+  }
+  .nav-links a:hover{ opacity: 1; }
+  .nav-actions{ display:flex; align-items:center; gap: 18px; }
+  .nav-icon{
+    width: 28px; height: 28px; border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--text); cursor: default;
+    opacity: .85;
+  }
+  .nav-icon:hover{ opacity:1; background: var(--bg-soft); }
+  .nav-icon svg{ width: 16px; height: 16px; }
+
+  /* ============ HERO ============ */
+  .hero{
+    text-align: center;
+    padding: 96px 22px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-eyebrow{
+    font-size: 14px; color: var(--accent);
+    font-weight: 500; margin: 0 0 18px;
+    letter-spacing: -0.01em;
+  }
+  .hero h1{
+    margin: 0;
+    font-size: clamp(48px, 7.2vw, 88px);
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 1.04;
+    color: var(--text);
+  }
+  .hero h1 .accent{
+    background: linear-gradient(135deg, #0071e3 0%, #5e9eff 50%, #b87fff 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero-sub{
+    margin: 22px auto 0;
+    font-size: clamp(18px, 1.8vw, 22px);
+    color: var(--text-soft);
+    max-width: 640px;
+    line-height: 1.45;
+    font-weight: 400;
+  }
+  .hero-cta{
+    margin-top: 36px;
+    display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;
+  }
+  .btn{
+    appearance: none; border: 0; cursor: default;
+    font-family: inherit;
+    font-size: 14px; font-weight: 500;
+    padding: 11px 22px;
+    border-radius: 980px;
+    letter-spacing: -0.01em;
+    transition: all .2s ease;
+  }
+  .btn-primary{
+    background: var(--accent); color: white;
+  }
+  .btn-primary:hover{ background: var(--accent-hover); transform: scale(1.02); }
+  .btn-ghost{
+    background: transparent; color: var(--accent);
+    padding: 11px 4px;
+  }
+  .btn-ghost::after{
+    content: " ›"; display: inline-block; margin-left: 2px;
+    transition: transform .2s ease;
+  }
+  .btn-ghost:hover::after{ transform: translateX(3px); }
+
+  /* Hero floating cards */
+  .hero-stage{
+    margin: 60px auto 0;
+    max-width: 980px;
+    height: 320px;
+    position: relative;
+  }
+  .float-card{
+    position: absolute;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-md);
+    padding: 18px 20px;
+    box-shadow: var(--shadow-md);
+    text-align: left;
+    transition: transform .4s cubic-bezier(.2,.8,.2,1);
+  }
+  .float-card:hover{ transform: translateY(-4px) !important; }
+  .fc-1{ left: 4%; top: 30px; width: 240px; transform: rotate(-3deg); }
+  .fc-2{ left: 50%; top: 8px; width: 280px; transform: translateX(-50%); z-index:2;
+         box-shadow: var(--shadow-lg); }
+  .fc-3{ right: 4%; top: 60px; width: 230px; transform: rotate(3deg); }
+  .fc-4{ left: 14%; bottom: 0; width: 200px; transform: rotate(2deg); }
+  .fc-5{ right: 12%; bottom: 18px; width: 220px; transform: rotate(-2deg); }
+
+  .fc-tag{
+    display: inline-block;
+    font-size: 10.5px; font-weight: 500;
+    padding: 3px 8px; border-radius: 6px;
+    background: var(--bg-soft); color: var(--text-soft);
+    margin-bottom: 10px;
+  }
+  .fc-title{
+    font-size: 14px; font-weight: 600; margin: 0 0 6px;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .fc-desc{
+    font-size: 12px; color: var(--text-soft); margin: 0;
+    line-height: 1.45;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .fc-meta{
+    display:flex; justify-content: space-between; align-items:center;
+    margin-top: 12px;
+    font-size: 11px; color: var(--text-mute);
+  }
+
+  /* ============ SECTION SHELL ============ */
+  section.block{ padding: 100px 22px; }
+  .block-head{
+    max-width: 1180px; margin: 0 auto 48px;
+    text-align: center;
+  }
+  .block-eyebrow{
+    font-size: 13px; font-weight: 500; color: var(--accent);
+    margin: 0 0 12px;
+  }
+  .block-title{
+    margin: 0; font-size: clamp(32px, 4vw, 48px);
+    font-weight: 600; letter-spacing: -0.03em; line-height: 1.1;
+  }
+  .block-sub{
+    margin: 14px auto 0; max-width: 620px;
+    font-size: 17px; color: var(--text-soft); line-height: 1.5;
+  }
+
+  /* ============ CATEGORY ROW ============ */
+  .cat-row{
+    max-width: 1180px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  }
+  @media (max-width: 860px){ .cat-row{ grid-template-columns: repeat(2,1fr); } }
+  .cat{
+    background: var(--bg-soft);
+    border-radius: var(--radius-lg);
+    padding: 28px 24px 24px;
+    aspect-ratio: 1 / 1.05;
+    display: flex; flex-direction: column; justify-content: space-between;
+    cursor: default;
+    transition: transform .3s ease, background .3s ease;
+    position: relative; overflow: hidden;
+  }
+  .cat:hover{ transform: translateY(-3px); }
+  .cat-icon{
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    background: var(--bg-elev);
+    box-shadow: var(--shadow-sm);
+    display: grid; place-items: center;
+    color: var(--accent);
+  }
+  .cat-icon svg{ width: 22px; height: 22px; }
+  .cat-foot h3{ margin: 0 0 4px; font-size: 19px; font-weight: 600; letter-spacing:-0.02em; }
+  .cat-foot p{ margin: 0; font-size: 13px; color: var(--text-soft); }
+  .cat-count{
+    position: absolute; top: 22px; right: 24px;
+    font-size: 12px; color: var(--text-mute);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ============ DASHBOARD MOCK ============ */
+  .dash-wrap{
+    max-width: 1180px; margin: 0 auto;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .dash-bar{
+    display:flex; align-items:center; gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line-soft);
+    background: var(--bg-soft);
+  }
+  .dash-traffic{ display:flex; gap: 6px; }
+  .dash-traffic span{
+    width: 11px; height: 11px; border-radius: 50%;
+    background: rgba(0,0,0,.08);
+  }
+  [data-theme="dark"] .dash-traffic span{ background: rgba(255,255,255,.12); }
+  .dash-search{
+    flex: 1; max-width: 360px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-size: 12px; color: var(--text-mute);
+    display:flex; align-items:center; gap: 8px;
+  }
+  .dash-search svg{ width: 12px; height: 12px; }
+  .dash-add{
+    margin-left: auto;
+    background: var(--accent); color: white;
+    font-size: 12px; font-weight: 500;
+    padding: 6px 14px; border-radius: 7px;
+    border: 0;
+    display:flex; align-items:center; gap: 5px;
+  }
+  .dash-body{
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: 460px;
+  }
+  .dash-side{
+    border-right: 1px solid var(--line-soft);
+    padding: 18px 8px;
+  }
+  .side-group{
+    font-size: 10.5px; font-weight: 600; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: .08em;
+    padding: 10px 12px 6px;
+  }
+  .side-item{
+    display:flex; align-items:center; gap: 10px;
+    padding: 7px 12px; border-radius: 7px;
+    font-size: 13px; color: var(--text);
+    margin-bottom: 1px;
+  }
+  .side-item .si-count{ margin-left: auto; font-size: 11px; color: var(--text-mute); }
+  .side-item.active{ background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent); }
+  .side-item.active .si-count{ color: var(--accent); }
+  .side-item svg{ width: 14px; height: 14px; opacity: .8; }
+
+  .dash-main{ padding: 22px 26px; }
+  .dash-h{
+    display:flex; align-items:baseline; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .dash-h h2{ margin: 0; font-size: 22px; font-weight: 600; letter-spacing:-0.02em; }
+  .dash-h .dash-meta{ font-size: 12px; color: var(--text-mute); }
+  .dash-grid{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+  }
+  @media (max-width: 760px){ .dash-grid{ grid-template-columns: repeat(2,1fr); } .dash-body{ grid-template-columns: 1fr; } .dash-side{ display:none } }
+  .ditem{
+    background: var(--bg);
+    border: 1px solid var(--line-soft);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    transition: all .2s ease;
+    cursor: default;
+    min-height: 140px;
+    display: flex; flex-direction: column;
+  }
+  .ditem:hover{ border-color: var(--line); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .ditem .ditem-tag{
+    display: inline-flex; align-items:center; gap: 5px;
+    font-size: 10.5px; font-weight: 500;
+    padding: 2px 8px; border-radius: 5px;
+    background: var(--bg-soft); color: var(--text-soft);
+    align-self: flex-start;
+    margin-bottom: 10px;
+  }
+  .ditem-tag .dot{ width: 6px; height: 6px; border-radius: 50%; }
+  .ditem h4{ margin: 0 0 6px; font-size: 14px; font-weight: 600; letter-spacing:-0.01em; line-height: 1.3; }
+  .ditem p{ margin: 0; font-size: 12.5px; color: var(--text-soft); line-height: 1.45;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow:hidden; flex: 1; }
+  .ditem-foot{
+    display:flex; justify-content: space-between; align-items:center;
+    margin-top: 12px;
+    font-size: 11px; color: var(--text-mute);
+  }
+
+  /* ============ FEATURE STRIP ============ */
+  .features{
+    max-width: 1180px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  @media (max-width: 760px){ .features{ grid-template-columns: 1fr; } }
+  .feat{
+    padding: 40px 32px;
+    border-right: 1px solid var(--line-soft);
+  }
+  .feat:last-child{ border-right: 0; }
+  @media (max-width: 760px){ .feat{ border-right: 0; border-bottom: 1px solid var(--line-soft); } }
+  .feat-num{
+    font-size: 12px; font-weight: 500; color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: .04em;
+  }
+  .feat h4{ margin: 14px 0 8px; font-size: 22px; font-weight: 600; letter-spacing: -0.02em; }
+  .feat p{ margin: 0; color: var(--text-soft); font-size: 14.5px; line-height: 1.5; }
+
+  /* ============ DETAIL VIEW ============ */
+  .detail-shell{
+    max-width: 980px; margin: 0 auto;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+  }
+  .detail-bar{
+    padding: 14px 22px; border-bottom: 1px solid var(--line-soft);
+    display:flex; align-items:center; gap: 14px;
+    font-size: 13px; color: var(--text-soft);
+  }
+  .detail-back{ color: var(--accent); }
+  .detail-bar .sep{ color: var(--text-mute); }
+  .detail-bar .actions{ margin-left: auto; display:flex; gap: 8px; }
+  .pill-btn{
+    font-size: 12px; padding: 5px 12px; border-radius: 980px;
+    background: var(--bg-soft); color: var(--text); border: 0;
+  }
+  .pill-btn.primary{ background: var(--accent); color: white; }
+
+  .detail-body{ padding: 48px 56px 56px; }
+  .detail-meta{ display:flex; gap: 12px; margin-bottom: 20px; align-items:center; }
+  .detail-meta .ditem-tag{ background: var(--bg-soft); }
+  .detail-meta .date{ font-size: 13px; color: var(--text-mute); }
+  .detail-body h1{
+    margin: 0 0 12px;
+    font-size: 40px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.15;
+  }
+  .detail-lede{
+    font-size: 19px; color: var(--text-soft); line-height: 1.5;
+    margin: 0 0 36px;
+  }
+  .detail-prose p{ font-size: 16px; line-height: 1.7; color: var(--text); margin: 0 0 18px; }
+  .detail-prose .quote{
+    border-left: 3px solid var(--accent);
+    padding: 4px 0 4px 18px;
+    margin: 24px 0;
+    color: var(--text-soft); font-size: 17px;
+    font-style: italic;
+  }
+  .detail-tags{
+    display:flex; gap: 8px; flex-wrap: wrap;
+    padding-top: 28px; margin-top: 32px;
+    border-top: 1px solid var(--line-soft);
+  }
+  .detail-tags .tg{
+    font-size: 12px; padding: 5px 12px;
+    background: var(--bg-soft); border-radius: 980px;
+    color: var(--text-soft);
+  }
+
+  /* ============ ADD MODAL ============ */
+  .add-shell{
+    max-width: 720px; margin: 0 auto;
+    background: var(--bg-elev);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--line);
+    overflow: hidden;
+  }
+  .add-head{
+    padding: 18px 26px; border-bottom: 1px solid var(--line-soft);
+    display:flex; align-items:center; justify-content: space-between;
+  }
+  .add-head h3{ margin: 0; font-size: 17px; font-weight: 600; letter-spacing:-0.02em; }
+  .add-close{ width: 26px; height: 26px; border-radius: 50%; background: var(--bg-soft);
+    display:grid; place-items:center; color: var(--text-soft); font-size: 14px; }
+  .add-body{ padding: 28px 26px; display: grid; gap: 20px; }
+  .field label{
+    display:block; font-size: 11.5px; font-weight: 500; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: .06em;
+    margin-bottom: 8px;
+  }
+  .field input, .field textarea, .field .fake-input{
+    width: 100%;
+    background: var(--bg-soft);
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text);
+    outline: none;
+    transition: all .15s ease;
+  }
+  .field input:focus, .field textarea:focus{
+    border-color: var(--accent);
+    background: var(--bg-elev);
+  }
+  .field .fake-input{ min-height: 96px; color: var(--text-mute); }
+  .add-tag-row{ display:flex; gap: 8px; flex-wrap: wrap; }
+  .chip{
+    font-size: 12.5px;
+    padding: 6px 12px;
+    background: var(--bg-soft); color: var(--text-soft);
+    border-radius: 980px;
+    border: 1px solid transparent;
+  }
+  .chip.on{
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .add-foot{
+    border-top: 1px solid var(--line-soft);
+    padding: 14px 26px;
+    display:flex; justify-content: space-between; align-items: center;
+  }
+  .add-foot .helper{ font-size: 12px; color: var(--text-mute); }
+  .add-actions{ display:flex; gap: 8px; }
+
+  /* ============ FOOTER ============ */
+  footer{
+    max-width: 1180px; margin: 0 auto;
+    border-top: 1px solid var(--line-soft);
+    padding: 28px 22px 48px;
+    display:flex; justify-content: space-between; align-items:center;
+    font-size: 12px; color: var(--text-mute);
+  }
+  footer .ft-links{ display:flex; gap: 22px; }
+  footer a{ color: var(--text-mute); text-decoration: none; }
+  footer a:hover{ color: var(--text); }
+
+  /* anchors offset for sticky nav */
+  .anchor{ scroll-margin-top: 70px; }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="nav-logo">My.</div>
+    <div class="nav-links">
+      <a href="#hero">홈</a>
+      <a href="#dashboard">정보</a>
+      <a href="#detail">상세</a>
+      <a href="#add">추가</a>
+      <a href="#features">소개</a>
+    </div>
+    <div class="nav-actions">
+      <div class="nav-icon" title="검색">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      </div>
+      <div class="nav-icon" title="프로필">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-7 8-7s8 3 8 7"/></svg>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section id="hero" class="hero anchor" data-screen-label="01 Hero">
+  <p class="hero-eyebrow">My — 나만의 정보 저장소</p>
+  <h1>
+    당신의 모든 것,<br/>
+    <span class="accent">한 곳에 머물게.</span>
+  </h1>
+  <p class="hero-sub">
+    메모, 링크, 영감, 일상의 조각들. 흩어진 정보를 하나의 흐름으로 정리하세요.
+    가볍고, 빠르고, 당신의 방식대로.
+  </p>
+  <div class="hero-cta">
+    <button class="btn btn-primary">시작하기</button>
+    <button class="btn btn-ghost">더 알아보기</button>
+  </div>
+
+  <div class="hero-stage" aria-hidden="true">
+    <div class="float-card fc-1">
+      <span class="fc-tag" style="color:#0071e3;background:rgba(0,113,227,.08)">아이디어</span>
+      <h4 class="fc-title">주말 도쿄 일정 정리</h4>
+      <p class="fc-desc">시부야 → 진보초 헌책방 → 카구라자카 골목길까지</p>
+      <div class="fc-meta"><span>5월 3일</span><span>12개</span></div>
+    </div>
+    <div class="float-card fc-2">
+      <span class="fc-tag" style="color:#bf5af2;background:rgba(191,90,242,.10)">읽을거리</span>
+      <h4 class="fc-title">디자인은 어떻게 작동하는가</h4>
+      <p class="fc-desc">"좋은 디자인은 가능한 적은 디자인이다." — 디터 람스의 10가지 원칙을 다시 읽으며.</p>
+      <div class="fc-meta"><span>북마크 · 8분</span><span>★</span></div>
+    </div>
+    <div class="float-card fc-3">
+      <span class="fc-tag" style="color:#34c759;background:rgba(52,199,89,.10)">레시피</span>
+      <h4 class="fc-title">미소된장 가지볶음</h4>
+      <p class="fc-desc">가지 2개, 미소 1큰술, 미림 1큰술, 설탕 약간. 마지막에 깨를 듬뿍.</p>
+      <div class="fc-meta"><span>4월 28일</span><span>7재료</span></div>
+    </div>
+    <div class="float-card fc-4">
+      <span class="fc-tag" style="color:#ff9500;background:rgba(255,149,0,.10)">메모</span>
+      <h4 class="fc-title">분기 회고</h4>
+      <p class="fc-desc">덜 하고, 깊게 하기. 회의 30분 → 25분.</p>
+      <div class="fc-meta"><span>오늘</span><span>—</span></div>
+    </div>
+    <div class="float-card fc-5">
+      <span class="fc-tag" style="color:#ff3b30;background:rgba(255,59,48,.10)">영화</span>
+      <h4 class="fc-title">패터슨 (2016)</h4>
+      <p class="fc-desc">반복되는 일상 속에서 시를 발견하는 운전기사 이야기.</p>
+      <div class="fc-meta"><span>★★★★★</span><span>2시간</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CATEGORIES ============ -->
+<section class="block anchor">
+  <div class="block-head">
+    <p class="block-eyebrow">Categories</p>
+    <h2 class="block-title">정보를 흐름으로 묶다.</h2>
+    <p class="block-sub">미리 정해진 형식 대신, 당신의 방식대로 정리되는 8가지 흐름.</p>
+  </div>
+  <div class="cat-row">
+    <div class="cat" style="--accent-local:#0071e3">
+      <div class="cat-icon" style="color:#0071e3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 4h11l3 3v13H5z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg></div>
+      <span class="cat-count">128</span>
+      <div class="cat-foot">
+        <h3>메모</h3>
+        <p>떠오르는 모든 생각</p>
+      </div>
+    </div>
+    <div class="cat">
+      <div class="cat-icon" style="color:#bf5af2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66l-1 1"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66l1-1"/></svg></div>
+      <span class="cat-count">64</span>
+      <div class="cat-foot">
+        <h3>링크</h3>
+        <p>나중에 다시 볼 페이지</p>
+      </div>
+    </div>
+    <div class="cat">
+      <div class="cat-icon" style="color:#34c759"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18"/></svg></div>
+      <span class="cat-count">42</span>
+      <div class="cat-foot">
+        <h3>레시피</h3>
+        <p>좋아하는 맛의 기록</p>
+      </div>
+    </div>
+    <div class="cat">
+      <div class="cat-icon" style="color:#ff9500"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h7v16H4zM13 4h7v10h-7z"/><path d="M13 18h7"/></svg></div>
+      <span class="cat-count">36</span>
+      <div class="cat-foot">
+        <h3>책</h3>
+        <p>읽었거나, 읽고 싶은</p>
+      </div>
+    </div>
+    <div class="cat">
+      <div class="cat-icon" style="color:#ff3b30"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M3 13h4M3 17h4M17 9h4M17 13h4M17 17h4"/></svg></div>
+      <span class="cat-count">21</span>
+      <div class="cat-foot">
+        <h3>영화</h3>
+        <p>오래 남은 장면들</p>
+      </div>
+    </div>
+    <div class="cat">
+      <div class="cat-icon" style="color:#5e9eff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+      <span class="cat-count">18</span>
+      <div class="cat-foot">
+        <h3>장소</h3>
+        <p>다시 가고 싶은 곳</p>
+      </div>
+    </div>
+    <div class="cat">
+      <div class="cat-icon" style="color:#af52de"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <span class="cat-count">9</span>
+      <div class="cat-foot">
+        <h3>할 일</h3>
+        <p>천천히 해나가는 것들</p>
+      </div>
+    </div>
+    <div class="cat">
+      <div class="cat-icon" style="color:#86868b"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.5 5.5l2 2M16.5 16.5l2 2M5.5 18.5l2-2M16.5 7.5l2-2"/></svg></div>
+      <span class="cat-count">+</span>
+      <div class="cat-foot">
+        <h3>새 카테고리</h3>
+        <p>당신만의 흐름을 추가</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section id="dashboard" class="block anchor" style="background: var(--bg-soft); padding-top: 100px; padding-bottom: 100px;">
+  <div class="block-head">
+    <p class="block-eyebrow">Dashboard</p>
+    <h2 class="block-title">한눈에, 흐트러짐 없이.</h2>
+    <p class="block-sub">사이드의 카테고리 흐름과 본문의 카드 그리드. 그 이상은 필요하지 않습니다.</p>
+  </div>
+
+  <div class="dash-wrap" data-screen-label="02 Dashboard">
+    <div class="dash-bar">
+      <div class="dash-traffic"><span></span><span></span><span></span></div>
+      <div class="dash-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <span>제목, 태그, 본문에서 검색…</span>
+      </div>
+      <button class="dash-add">＋ 추가</button>
+    </div>
+
+    <div class="dash-body">
+      <aside class="dash-side">
+        <div class="side-group">전체</div>
+        <div class="side-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          모든 항목 <span class="si-count">318</span>
+        </div>
+        <div class="side-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2 15 8l7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          즐겨찾기 <span class="si-count">24</span>
+        </div>
+        <div class="side-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          최근 <span class="si-count">12</span>
+        </div>
+
+        <div class="side-group">카테고리</div>
+        <div class="side-item active">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4h11l3 3v13H5z"/></svg>
+          메모 <span class="si-count">128</span>
+        </div>
+        <div class="side-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 14a4 4 0 0 0 5.66 0l3-3a4 4 0 0 0-5.66-5.66"/><path d="M14 10a4 4 0 0 0-5.66 0l-3 3a4 4 0 0 0 5.66 5.66"/></svg>
+          링크 <span class="si-count">64</span>
+        </div>
+        <div class="side-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 3v18"/></svg>
+          레시피 <span class="si-count">42</span>
+        </div>
+        <div class="side-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h7v16H4zM13 4h7v10h-7z"/></svg>
+          책 <span class="si-count">36</span>
+        </div>
+        <div class="side-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/></svg>
+          영화 <span class="si-count">21</span>
+        </div>
+      </aside>
+
+      <main class="dash-main">
+        <div class="dash-h">
+          <h2>메모</h2>
+          <span class="dash-meta">128개의 항목 · 최근 수정순</span>
+        </div>
+        <div class="dash-grid">
+          <div class="ditem">
+            <span class="ditem-tag"><span class="dot" style="background:#0071e3"></span>아이디어</span>
+            <h4>주말 도쿄 일정 정리</h4>
+            <p>시부야 → 진보초 헌책방 거리 → 카구라자카 골목길 → 신주쿠 교엔. 동선이 자연스럽게 흐른다.</p>
+            <div class="ditem-foot"><span>오늘</span><span>★</span></div>
+          </div>
+          <div class="ditem">
+            <span class="ditem-tag"><span class="dot" style="background:#bf5af2"></span>인용</span>
+            <h4>좋은 디자인은 적은 디자인</h4>
+            <p>디터 람스의 열 가지 원칙 중 마지막. 무엇을 더할지보다 무엇을 뺄지를 먼저.</p>
+            <div class="ditem-foot"><span>어제</span><span>—</span></div>
+          </div>
+          <div class="ditem">
+            <span class="ditem-tag"><span class="dot" style="background:#34c759"></span>메모</span>
+            <h4>분기 회고 — 덜, 깊게</h4>
+            <p>회의를 30분에서 25분으로. 시작 시간을 정시가 아닌 5분 후로. 이것만으로도 하루가 조금 더 길어진다.</p>
+            <div class="ditem-foot"><span>5월 2일</span><span>—</span></div>
+          </div>
+          <div class="ditem">
+            <span class="ditem-tag"><span class="dot" style="background:#ff9500"></span>운동</span>
+            <h4>스쿼트 루틴</h4>
+            <p>워밍업 5분, 본운동 4세트 × 12회, 마지막 세트는 8회 + 호흡. 주 3회.</p>
+            <div class="ditem-foot"><span>4월 30일</span><span>—</span></div>
+          </div>
+          <div class="ditem">
+            <span class="ditem-tag"><span class="dot" style="background:#ff3b30"></span>일기</span>
+            <h4>비 오는 화요일</h4>
+            <p>창밖 빗소리. 쓰지 않은 페이지가 더 길지만, 그래도 한 줄을 적었다는 것에 만족.</p>
+            <div class="ditem-foot"><span>4월 29일</span><span>★</span></div>
+          </div>
+          <div class="ditem">
+            <span class="ditem-tag"><span class="dot" style="background:#5e9eff"></span>아이디어</span>
+            <h4>주간 뉴스레터 컨셉</h4>
+            <p>매주 한 가지 도구, 한 권의 책, 한 곡의 음악. 짧고 정직하게.</p>
+            <div class="ditem-foot"><span>4월 27일</span><span>—</span></div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DETAIL VIEW ============ -->
+<section id="detail" class="block anchor">
+  <div class="block-head">
+    <p class="block-eyebrow">Detail</p>
+    <h2 class="block-title">읽기 좋은 페이지.</h2>
+    <p class="block-sub">정보 하나하나가 글로서 존중받는, 넉넉한 여백의 상세 화면.</p>
+  </div>
+
+  <div class="detail-shell" data-screen-label="03 Detail">
+    <div class="detail-bar">
+      <span class="detail-back">‹ 메모</span>
+      <span class="sep">/</span>
+      <span>주말 도쿄 일정 정리</span>
+      <div class="actions">
+        <button class="pill-btn">★ 즐겨찾기</button>
+        <button class="pill-btn">공유</button>
+        <button class="pill-btn primary">편집</button>
+      </div>
+    </div>
+    <div class="detail-body">
+      <div class="detail-meta">
+        <span class="ditem-tag"><span class="dot" style="background:#0071e3"></span>아이디어</span>
+        <span class="date">2026년 5월 3일 · 오후 2:18</span>
+      </div>
+      <h1>주말 도쿄 일정 정리</h1>
+      <p class="detail-lede">시부야의 분주함에서 시작해 진보초의 오래된 종이 냄새로, 다시 카구라자카의 좁은 골목으로. 하루를 도시의 결을 따라 걷는 방식으로 디자인하고 싶었다.</p>
+
+      <div class="detail-prose">
+        <p>아침은 시부야 스크램블에서 늦지 않게. 인파가 가장 적은 시간은 의외로 토요일 아침 9시 전후라고 한다. 카페 한 잔, 짧은 산책, 그리고 진보초로 이동.</p>
+        <div class="quote">"여행은 결국 풍경이 아니라 시간을 모으는 일이다."</div>
+        <p>점심은 카구라자카의 작은 소바집. 골목 안쪽에 있어 처음 가는 사람은 한 번 지나치게 되는 곳. 그게 좋다. 길을 잃을 수 있는 거리는 아직 살아 있는 거리다.</p>
+        <p>저녁에는 신주쿠 교엔을 산책. 폐장 한 시간 전, 사람이 빠져나간 잔디밭에 누워 하늘을 보는 시간을 일정에 넣어두기로 했다. 일정을 비워두는 것도 일정이다.</p>
+      </div>
+
+      <div class="detail-tags">
+        <span class="tg">#도쿄</span>
+        <span class="tg">#여행계획</span>
+        <span class="tg">#주말</span>
+        <span class="tg">#5월</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ADD ============ -->
+<section id="add" class="block anchor" style="background: var(--bg-soft);">
+  <div class="block-head">
+    <p class="block-eyebrow">Add</p>
+    <h2 class="block-title">생각의 속도로 저장하기.</h2>
+    <p class="block-sub">제목과 한 줄. 그것만으로도 충분합니다. 나머지는 천천히.</p>
+  </div>
+
+  <div class="add-shell" data-screen-label="04 Add">
+    <div class="add-head">
+      <h3>새 항목 추가</h3>
+      <span class="add-close">✕</span>
+    </div>
+    <div class="add-body">
+      <div class="field">
+        <label>카테고리</label>
+        <div class="add-tag-row">
+          <span class="chip on">메모</span>
+          <span class="chip">링크</span>
+          <span class="chip">레시피</span>
+          <span class="chip">책</span>
+          <span class="chip">영화</span>
+          <span class="chip">장소</span>
+          <span class="chip">＋</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>제목</label>
+        <input type="text" value="비 오는 화요일에 떠오른 것" />
+      </div>
+      <div class="field">
+        <label>내용</label>
+        <div class="fake-input">창밖에 비가 내리는 동안, 책상 위에 펜을 두고 한참을 그저 보고 있었다…</div>
+      </div>
+      <div class="field">
+        <label>태그</label>
+        <div class="add-tag-row">
+          <span class="chip on">#일기</span>
+          <span class="chip on">#5월</span>
+          <span class="chip">+ 태그 추가</span>
+        </div>
+      </div>
+    </div>
+    <div class="add-foot">
+      <span class="helper">⌘ + Enter 로 빠르게 저장</span>
+      <div class="add-actions">
+        <button class="pill-btn">취소</button>
+        <button class="pill-btn primary">저장</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section id="features" class="block anchor" style="padding-bottom: 60px;">
+  <div class="block-head">
+    <p class="block-eyebrow">Why My</p>
+    <h2 class="block-title">필요한 만큼만, 정확히.</h2>
+  </div>
+  <div class="features">
+    <div class="feat">
+      <div class="feat-num">01</div>
+      <h4>한 번의 동작.</h4>
+      <p>제목 한 줄이면 충분합니다. 카테고리, 태그, 본문은 마음이 정리될 때 천천히.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-num">02</div>
+      <h4>당신만의 분류.</h4>
+      <p>미리 정해진 형식이 아니라, 당신의 흐름에 맞춰 카테고리가 만들어집니다.</p>
+    </div>
+    <div class="feat">
+      <div class="feat-num">03</div>
+      <h4>오롯이 당신만.</h4>
+      <p>당신의 정보는 당신의 것입니다. 단순한 약속이지만, 가장 중요한 약속.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2026 My.</span>
+  <div class="ft-links">
+    <a href="#">개인정보처리방침</a>
+    <a href="#">이용약관</a>
+    <a href="#">문의</a>
+  </div>
+</footer>
+
+<!-- ============ TWEAKS ============ -->
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "dark": false,
+    "accent": "#0071e3",
+    "fontSize": 16,
+    "radius": "regular",
+    "showHeroCards": true,
+    "siteName": "My."
+  }/*EDITMODE-END*/;
+
+  function App(){
+    const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+
+    React.useEffect(() => {
+      document.documentElement.setAttribute('data-theme', t.dark ? 'dark' : 'light');
+      document.documentElement.style.setProperty('--accent', t.accent);
+      document.documentElement.style.setProperty('--accent-hover', t.accent);
+      document.body.style.fontSize = t.fontSize + 'px';
+
+      const radiusMap = {
+        sharp:   { sm:'4px',  md:'8px',  lg:'12px', xl:'16px' },
+        regular: { sm:'10px', md:'14px', lg:'22px', xl:'28px' },
+        soft:    { sm:'14px', md:'20px', lg:'28px', xl:'36px' },
+      };
+      const r = radiusMap[t.radius] || radiusMap.regular;
+      document.documentElement.style.setProperty('--radius-sm', r.sm);
+      document.documentElement.style.setProperty('--radius-md', r.md);
+      document.documentElement.style.setProperty('--radius-lg', r.lg);
+      document.documentElement.style.setProperty('--radius-xl', r.xl);
+
+      // hero stage visibility
+      const stage = document.querySelector('.hero-stage');
+      if (stage) stage.style.display = t.showHeroCards ? '' : 'none';
+
+      // site name
+      const logo = document.querySelector('.nav-logo');
+      if (logo) logo.textContent = t.siteName;
+    }, [t]);
+
+    return (
+      <TweaksPanel title="Tweaks">
+        <TweakSection label="테마" />
+        <TweakToggle  label="다크 모드" value={t.dark}
+                      onChange={(v) => setTweak('dark', v)} />
+        <TweakColor   label="액센트 컬러" value={t.accent}
+                      options={['#0071e3','#1d1d1f','#ff6b35','#34a853','#bf5af2','#ff3b30']}
+                      onChange={(v) => setTweak('accent', v)} />
+
+        <TweakSection label="레이아웃" />
+        <TweakSlider  label="폰트 크기" value={t.fontSize} min={14} max={20} unit="px"
+                      onChange={(v) => setTweak('fontSize', v)} />
+        <TweakRadio   label="모서리" value={t.radius}
+                      options={['sharp','regular','soft']}
+                      onChange={(v) => setTweak('radius', v)} />
+
+        <TweakSection label="콘텐츠" />
+        <TweakText    label="사이트 이름" value={t.siteName}
+                      onChange={(v) => setTweak('siteName', v)} />
+        <TweakToggle  label="히어로 카드 표시" value={t.showHeroCards}
+                      onChange={(v) => setTweak('showHeroCards', v)} />
+      </TweaksPanel>
+    );
+  }
+
+  const root = document.createElement('div');
+  document.body.appendChild(root);
+  ReactDOM.createRoot(root).render(<App />);
+</script>
+
+</body>
+</html>
